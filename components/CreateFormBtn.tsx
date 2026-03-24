@@ -37,8 +37,10 @@ import { Span } from "next/dist/trace";
 import { Toast } from "radix-ui";
 import { formSchema, formSchemaType } from "./schema/form";
 import { CreateForm } from "@/actions/form";
+import { useRouter } from "next/navigation";
 
 function CreateFormBtn() {
+  const router = useRouter();
   const form = useForm<formSchemaType>({
     resolver: zodResolver(formSchema),
   });
@@ -49,7 +51,7 @@ function CreateFormBtn() {
       toast.success("Success", {
         description: "Form created successfully",
       });
-      console.log("FORMID", formId);
+      router.push(`/builder/${formId}`);
     } catch {
       toast.error("Error", {
         description: "Something went wrong, please try again later",
