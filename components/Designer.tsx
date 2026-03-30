@@ -20,7 +20,8 @@ import { Button } from "./ui/button";
 import { BiSolidTrash } from "react-icons/bi";
 
 function Designer() {
-  const { elements, addElement } = useDesigner();
+  const { elements, addElement, selectedElement, setSelectedElement } =
+    useDesigner();
 
   const droppable = useDroppable({
     id: "designer-drop-area",
@@ -52,7 +53,13 @@ function Designer() {
 
   return (
     <div className="flex w-full h-full">
-      <div className="w-full p-4">
+      <div
+        className="w-full p-4"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (selectedElement) setSelectedElement(null);
+        }}
+      >
         <div
           ref={droppable.setNodeRef}
           className={cn(
@@ -87,7 +94,7 @@ function Designer() {
 function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
   const [mouseIsOver, setMouseIsOver] = useState<boolean>(false);
 
-  const { removeElement } = useDesigner();
+  const { removeElement, selectedElement, setSelectedElement } = useDesigner();
 
   const topHalf = useDroppable({
     id: element.id + "-top",
@@ -115,7 +122,7 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
       isDesignerElement: true,
     },
   });
-
+  console.log("SELECTED EL", selectedElement);
   if (draggable.isDragging) return null;
 
   const DesignerElement = FormElements[element.type].designerComponent;
@@ -127,6 +134,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
       {...draggable.attributes}
       onMouseOver={() => setMouseIsOver(true)}
       onMouseOut={() => setMouseIsOver(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedElement(element);
+      }}
     >
       <div
         ref={topHalf.setNodeRef}
@@ -142,7 +153,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             <Button
               className="flex justify-center h-full border rounded-md rounded-l-none !bg-red-500"
               variant={"outline"}
-              onClick={() => removeElement(element.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeElement(element.id);
+              }}
             >
               <BiSolidTrash className="h-6 w-6" />
             </Button>

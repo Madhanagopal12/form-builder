@@ -7,8 +7,26 @@ import {
   FormElementInstance,
   FormElements,
 } from "../FormElements";
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldContent,
+  FieldTitle,
+} from "../ui/field";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import z from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import useDesigner from "../hooks/useDesigner";
+import { Switch } from "../ui/switch";
 
 const type: ElementsType = "TextField";
 
@@ -18,6 +36,13 @@ const extraAttributes = {
   required: false,
   placeHolder: "Value here...",
 };
+
+const propertiesSchema = z.object({
+  label: z.string().min(2).max(50),
+  helperText: z.string().max(200),
+  required: z.boolean(),
+  placeHolder: z.string().max(50),
+});
 
 export const TextFieldFormElement: FormElement = {
   type,
@@ -32,12 +57,125 @@ export const TextFieldFormElement: FormElement = {
   },
   designerComponent: DesignerComponent,
   formComponent: () => <div>Form Component</div>,
-  propertiesComponent: () => <div>Properties Component</div>,
+  propertiesComponent: PropertiesComponent,
 };
 
 type CustomerInstance = FormElementInstance & {
   extraAttributes: typeof extraAttributes;
 };
+
+type propertiesFormSchemaType = z.infer<typeof propertiesSchema>;
+
+function PropertiesComponent({
+  elementInstance,
+}: {
+  elementInstance: FormElementInstance;
+}) {
+  const element = elementInstance as CustomerInstance;
+  const { updateElement } = useDesigner();
+  const form = useForm<propertiesFormSchemaType>({
+    resolver: zodResolver(propertiesSchema),
+    mode: "onBlur",
+    defaultValues: {
+      label: element.extraAttributes.label,
+      helperText: element.extraAttributes.helperText,
+      required: element.extraAttributes.required,
+      placeHolder: element.extraAttributes.placeHolder,
+    },
+  });
+
+  useEffect(() => {
+    form.reset(element.extraAttributes);
+  }, [form, element]);
+
+  function applyChanges(values: propertiesFormSchemaType) {
+    const { label, helperText, required, placeHolder } = values;
+    updateElement(element.id, {
+      ...element,
+      extraAttributes: {
+        label,
+        helperText,
+        required,
+        placeHolder,
+      },
+    });
+  }
+
+  return (
+    <form
+      onBlur={form.handleSubmit(applyChanges)}
+      onSubmit={(e) => e.preventDefault()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+      }}
+      className="space-y-3"
+    >
+      <Controller
+        name="label"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel>Label</FieldLabel>
+            <Input {...field} />
+            <FieldDescription>
+              The labe of the field. <br />
+              This will be displayed above the field
+            </FieldDescription>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+      <Controller
+        name="placeHolder"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel>PlaceHolder</FieldLabel>
+            <Input {...field} />
+            <FieldDescription>The placeholder of the field.</FieldDescription>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+      <Controller
+        name="helperText"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel>HelperText</FieldLabel>
+            <Input {...field} />
+            <FieldDescription>
+              The helperText of the field. <br />
+              This will be shown below the field
+            </FieldDescription>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+      <Controller
+        name="required"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="space-y-0 5">
+              <FieldLabel>Required</FieldLabel>
+            </div>
+            <div className="flex flex-row gap-8 items-center justify-self-start">
+              <FieldDescription>
+                The is the required field. <br />
+                This will be shown below the field
+              </FieldDescription>
+
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+            </div>
+
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+    </form>
+  );
+}
 
 function DesignerComponent({
   elementInstance,
