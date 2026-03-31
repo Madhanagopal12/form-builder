@@ -3,7 +3,7 @@ import { FormElements } from "./FormElements";
 import SidebarBtnElement from "./SidebarBtnElement";
 import useDesigner from "./hooks/useDesigner";
 import FormElementsSidebar from "./FormElementsSidebar";
-import ProppertiesFormSidebar from "./ProppertiesFormSidebar";
+import ProppertiesFormSidebar from "./PropertiesFormSidebar";
 
 function DesignerSideBar() {
   const { selectedElement } = useDesigner();
