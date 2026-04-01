@@ -3,6 +3,7 @@
 import { formSchema, formSchemaType } from "@/components/schema/form";
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { useRect } from "@dnd-kit/core/dist/hooks/utilities";
 
 // class UsernotFoundErr extends Error {
 //   constructor() {
@@ -87,6 +88,38 @@ export async function GetFormById(id: number) {
   if (!user) throw new Error("User not found");
 
   return await prisma.form.findUnique({
+    where: {
+      userId: user.id,
+      id,
+    },
+  });
+}
+
+export async function UpdateFormContent(id: number, jsonContent: string) {
+  const user = await currentUser();
+
+  if (!user) throw new Error("User not found");
+
+  return await prisma.form.update({
+    where: {
+      userId: user.id,
+      id,
+    },
+    data: {
+      content: jsonContent,
+    },
+  });
+}
+
+export async function PublishForm(id: number) {
+  const user = await currentUser();
+
+  if (!user) throw new Error("User not found");
+
+  return await prisma.form.update({
+    data: {
+      published: true,
+    },
     where: {
       userId: user.id,
       id,
