@@ -22,6 +22,10 @@ import useDesigner from "./hooks/useDesigner";
 import { ImSpinner2 } from "react-icons/im";
 import Confetti from "react-confetti";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
+import Link from "next/link";
+import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 function FormBuilder({ form }: { form: Form }) {
   const { setElements } = useDesigner();
@@ -65,9 +69,13 @@ function FormBuilder({ form }: { form: Form }) {
   if (form.published) {
     return (
       <>
-        <Confetti />
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+        />
         <div className="flex flex-col items-center justify-center h-full w-full">
-          <div className="max-w-m">
+          <div className="max-w-md">
             <h1 className="text-center text-4xl font-bold text-primary border-b pb-2 mb-10">
               🎊🎊 Form Published 🎊🎊
             </h1>
@@ -77,6 +85,31 @@ function FormBuilder({ form }: { form: Form }) {
             </h3>
             <div className="flex flex-col items-center gap-2 my-4 w-full border-b pb-4">
               <Input className="w-ful" readOnly value={sharedUrl} />
+              <Button
+                className="mt-2 w-full"
+                onClick={() => {
+                  navigator.clipboard.writeText(sharedUrl);
+                  toast("Copied", {
+                    description: "Link copied to clipboard",
+                  });
+                }}
+              >
+                Copy Link
+              </Button>
+            </div>
+            <div className="flex justify-between">
+              <Button variant={"link"} asChild>
+                <Link href={"/"} className="gap-2">
+                  <BsArrowLeft />
+                  Go back home
+                </Link>
+              </Button>
+              <Button variant={"link"} asChild>
+                <Link href={`forms/${form.id}`} className="gap-2">
+                  Form Details
+                  <BsArrowRight />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
