@@ -99,7 +99,7 @@ function StatsCards(props: StatsCardProps) {
   );
 }
 
-function StatsCard({
+export function StatsCard({
   className,
   title,
   icon,
