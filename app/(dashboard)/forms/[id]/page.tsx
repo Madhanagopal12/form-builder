@@ -72,8 +72,16 @@ async function FormDetailPage({ params }: { params: Promise<{ id: string }> }) {
           loading={false}
         />
       </div>
+
+      <div className="container pt-10">
+        <SubmissionsTable id={form.id} />
+      </div>
     </>
   );
+}
+
+function SubmissionsTable({ id }: { id: number }) {
+  return <h1 className="text-2xl font-bold my-4">Submissions</h1>;
 }
 
 export default FormDetailPage;

@@ -4,6 +4,7 @@ import { formSchema, formSchemaType } from "@/components/schema/form";
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { useRect } from "@dnd-kit/core/dist/hooks/utilities";
+import { User } from "lucide-react";
 
 // class UsernotFoundErr extends Error {
 //   constructor() {
@@ -123,6 +124,22 @@ export async function PublishForm(id: number) {
     where: {
       userId: user.id,
       id,
+    },
+  });
+}
+
+export async function GetFormContentByUrl(formUrl: string) {
+  return await prisma.form.update({
+    select: {
+      content: true,
+    },
+    data: {
+      visits: {
+        increment: 1,
+      },
+    },
+    where: {
+      shareURL: formUrl,
     },
   });
 }

@@ -61,7 +61,7 @@ function PublishFormBtn({ id }: { id: number }) {
             disabled={loading}
             onClick={(e) => {
               e.preventDefault();
-              startTransition(publishForm);
+              startTransition(conf);
             }}
           >
             Proceed {loading && <FaIcons className="animate-spin" />}
