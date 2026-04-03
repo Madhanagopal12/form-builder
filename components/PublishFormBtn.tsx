@@ -18,9 +18,11 @@ import {
 import { FaIcons } from "react-icons/fa";
 import { PublishForm } from "@/actions/form";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 function PublishFormBtn({ id }: { id: number }) {
   const [loading, startTransition] = useTransition();
+  const router = useRouter();
 
   async function publishForm() {
     try {
@@ -28,6 +30,7 @@ function PublishFormBtn({ id }: { id: number }) {
       toast("Sucess", {
         description: "Now your form is availabe to the public",
       });
+      router.refresh();
     } catch {
       toast("Error", {
         description: "Something went wrong",
@@ -61,7 +64,7 @@ function PublishFormBtn({ id }: { id: number }) {
             disabled={loading}
             onClick={(e) => {
               e.preventDefault();
-              startTransition(conf);
+              startTransition(publishForm);
             }}
           >
             Proceed {loading && <FaIcons className="animate-spin" />}
