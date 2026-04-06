@@ -105,7 +105,7 @@ function FormBuilder({ form }: { form: Form }) {
                 </Link>
               </Button>
               <Button variant={"link"} asChild>
-                <Link href={`forms/${form.id}`} className="gap-2">
+                <Link href={`/forms/${form.id}`} className="gap-2">
                   Form Details
                   <BsArrowRight />
                 </Link>
