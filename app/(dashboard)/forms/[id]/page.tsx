@@ -1,6 +1,10 @@
-import { GetFormById } from "@/actions/form";
-import { Divide } from "lucide-react";
-import React from "react";
+import {
+  GetFormById,
+  GetFormStats,
+  GetFormWithSubmissions,
+} from "@/actions/form";
+import { Columns, Divide } from "lucide-react";
+import React, { ReactNode } from "react";
 import FormBuilder from "@/components/FormBuilder";
 import VisitBtn from "@/components/VisitBtn";
 import FormLinkShare from "@/components/FormLinkShare";
@@ -8,6 +12,16 @@ import { StatsCard } from "../../page";
 import { LuView } from "react-icons/lu";
 import { HiCursorClick } from "react-icons/hi";
 import { TbArrowBounce } from "react-icons/tb";
+import { ElementsType, FormElementInstance } from "@/components/FormElements";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatDistance } from "date-fns";
 
 async function FormDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -80,8 +94,93 @@ async function FormDetailPage({ params }: { params: Promise<{ id: string }> }) {
   );
 }
 
-function SubmissionsTable({ id }: { id: number }) {
-  return <h1 className="text-2xl font-bold my-4">Submissions</h1>;
+type Row = { [key: string]: string } & {
+  submittedAt: Date;
+};
+
+async function SubmissionsTable({ id }: { id: number }) {
+  const form = await GetFormWithSubmissions(id);
+
+  if (!form) throw new Error("Form not found...");
+
+  const formElements = JSON.parse(form.content) as FormElementInstance[];
+
+  const columns: {
+    id: string;
+    label: string;
+    required: boolean;
+    type: ElementsType;
+  }[] = [];
+
+  formElements.forEach((element) => {
+    switch (element.type) {
+      case "TextField":
+        columns.push({
+          id: element.id,
+          label: element.extraAttributes?.label,
+          required: element.extraAttributes?.required,
+          type: element.type,
+        });
+        break;
+      default:
+        break;
+    }
+  });
+
+  const rows: Row[] = [];
+
+  form.formSubmissions.forEach((submission) => {
+    const content = JSON.parse(submission.content);
+    rows.push({
+      ...content,
+      submittedAt: submission.createatedAt,
+    });
+  });
+
+  return (
+    <>
+      <h1 className="text-2xl font-bold my-4">Submissions</h1>
+      <div className="border rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead key={column.id} className="uppercase">
+                  {column.label}
+                </TableHead>
+              ))}
+              <TableHead className="text-muted-forefround uppercase">
+                Submitted at
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row, index) => (
+              <TableRow key={index}>
+                {columns.map((column) => (
+                  <RowCell
+                    key={column.id}
+                    type={column.type}
+                    value={row[column.id]}
+                  />
+                ))}
+                <TableCell className="text-muted-foreground text-right">
+                  {formatDistance(row.submittedAt, new Date(), {
+                    addSuffix: true,
+                  })}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
+}
+
+function RowCell({ type, value }: { type: ElementsType; value: string }) {
+  const node: ReactNode = value;
+  return <TableCell>{node}</TableCell>;
 }
 
 export default FormDetailPage;
