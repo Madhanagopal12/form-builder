@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { MdPreview } from "react-icons/md";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import useDesigner from "./hooks/useDesigner";
 import { FormElements } from "./FormElements";
 import { Form } from "lucide-react";
@@ -17,6 +17,8 @@ function PreviewDialogBtn() {
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen h-screen max-h-screen max-w-full flex flex-col grow p-0 gap-0">
+        <DialogTitle className="sr-only">Form Preview</DialogTitle>
+
         <div className="px-4 py-2 border-b">
           <p className="text-lg font-bold text-muted-foreground">
             Form Preview
