@@ -26,10 +26,7 @@ import Link from "next/link";
 import { FaEdit } from "react-icons/fa";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import ErrorPageComponent from "@/components/ErrorPageComponent";
 import EmptyFormsState from "@/components/EmptyFormState";
-
-export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const user = await currentUser();
