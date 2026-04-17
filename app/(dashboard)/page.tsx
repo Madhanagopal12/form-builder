@@ -24,8 +24,21 @@ import { Span } from "next/dist/trace";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaEdit } from "react-icons/fa";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import ErrorPageComponent from "@/components/ErrorPageComponent";
+import EmptyFormsState from "@/components/EmptyFormState";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const user = await currentUser();
+
+  if (!user) {
+    console.log("🔄 Redirecting to /sign-in");
+    redirect("/sign-in");
+  }
+
   return (
     <div className="container pt-4">
       <Suspense fallback={<StatsCards loading={true} />}>
@@ -50,6 +63,8 @@ export default function Home() {
 
 async function CardStatsWrapper() {
   const stats = await GetFormStats();
+  // if (!stats) return <ErrorPageComponent />;
+
   return <StatsCards loading={false} data={stats} />;
 }
 
@@ -145,6 +160,11 @@ function FormCardSkeleton() {
 
 async function FormCards() {
   const forms = await GetForms();
+
+  if (!forms) return null;
+
+  if (forms.length === 0) return <EmptyFormsState />;
+
   return (
     <>
       {forms.map((form) => (
