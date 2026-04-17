@@ -5,7 +5,6 @@ import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { useRect } from "@dnd-kit/core/dist/hooks/utilities";
 import { User } from "lucide-react";
-import ErrorPageComponent from "@/components/ErrorPageComponent";
 import { RiH1 } from "react-icons/ri";
 import { FormElement } from "@/components/FormElements";
 import { redirect } from "next/navigation";
